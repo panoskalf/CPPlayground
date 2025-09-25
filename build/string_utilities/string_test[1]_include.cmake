@@ -1,0 +1,5 @@
+if(EXISTS "C:/projects/Learning/panos/playground/build/string_utilities/string_test[1]_tests.cmake")
+  include("C:/projects/Learning/panos/playground/build/string_utilities/string_test[1]_tests.cmake")
+else()
+  add_test(string_test_NOT_BUILT string_test_NOT_BUILT)
+endif()

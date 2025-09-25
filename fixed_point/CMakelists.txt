@@ -1,0 +1,6 @@
+add_executable(fixed_point_test test_fixed_point.cpp fixed_point.h)
+
+target_link_libraries(fixed_point_test gtest_main)
+
+include(GoogleTest)
+gtest_discover_tests(fixed_point_test)

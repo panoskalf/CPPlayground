@@ -1,0 +1,5 @@
+if(EXISTS "C:/projects/Learning/panos/playground/build/fixed_point/fixed_point_test[1]_tests.cmake")
+  include("C:/projects/Learning/panos/playground/build/fixed_point/fixed_point_test[1]_tests.cmake")
+else()
+  add_test(fixed_point_test_NOT_BUILT fixed_point_test_NOT_BUILT)
+endif()

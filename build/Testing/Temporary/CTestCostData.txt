@@ -1,0 +1,13 @@
+StringUtilitiesTest.CaseConversion 3 0.0066506
+StringUtilitiesTest.TrimmingOperations 3 0.00632267
+StringUtilitiesTest.StringSplitting 3 0.0071628
+StringUtilitiesTest.StringValidation 3 0.00638463
+StringUtilitiesTest.PrefixSuffixChecking 3 0.00651503
+StringUtilitiesTest.StringReplacement 3 0.00653777
+StringUtilitiesTest.StringJoining 3 0.006152
+StringUtilitiesTest.SearchOperations 3 0.00623117
+StringUtilitiesTest.EdgeCases 3 0.00620683
+StringUtilitiesTest.BasicPerformanceChecks 3 0.00620113
+FixedPointTest.Addition 3 0.0062863
+FixedPointTest.Multiplication 2 0.0098478
+---

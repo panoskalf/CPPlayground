@@ -1,0 +1,1 @@
+-isystem "C:/projects/Learning/panos/playground/build/_deps/googletest-src/googlemock/include" -isystem "C:/projects/Learning/panos/playground/build/_deps/googletest-src/googlemock" -isystem "C:/projects/Learning/panos/playground/build/_deps/googletest-src/googletest/include" -isystem "C:/projects/Learning/panos/playground/build/_deps/googletest-src/googletest"
