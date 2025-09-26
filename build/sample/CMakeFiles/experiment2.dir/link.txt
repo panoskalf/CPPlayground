@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\experiment2.dir/objects.a
-C:\SysGCC\mingw32\bin\ar.exe qc CMakeFiles\experiment2.dir/objects.a @CMakeFiles\experiment2.dir\objects1.rsp
-C:\SysGCC\mingw32\bin\c++.exe -Wl,--whole-archive CMakeFiles\experiment2.dir/objects.a -Wl,--no-whole-archive -o experiment2.exe -Wl,--out-implib,libexperiment2.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\experiment2.dir\linkLibs.rsp

@@ -1,3 +1,0 @@
-FixedPointTest.Addition 1 0.0205639
-FixedPointTest.Multiplication 1 0.0191092
----

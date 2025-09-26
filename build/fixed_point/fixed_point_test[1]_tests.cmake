@@ -1,5 +1,0 @@
-add_test([=[FixedPointTest.Addition]=]  C:/projects/Learning/panos/playground/build/fixed_point/fixed_point_test.exe [==[--gtest_filter=FixedPointTest.Addition]==] --gtest_also_run_disabled_tests)
-set_tests_properties([=[FixedPointTest.Addition]=]  PROPERTIES WORKING_DIRECTORY C:/projects/Learning/panos/playground/build/fixed_point SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
-add_test([=[FixedPointTest.Multiplication]=]  C:/projects/Learning/panos/playground/build/fixed_point/fixed_point_test.exe [==[--gtest_filter=FixedPointTest.Multiplication]==] --gtest_also_run_disabled_tests)
-set_tests_properties([=[FixedPointTest.Multiplication]=]  PROPERTIES WORKING_DIRECTORY C:/projects/Learning/panos/playground/build/fixed_point SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
-set(  fixed_point_test_TESTS FixedPointTest.Addition FixedPointTest.Multiplication)
