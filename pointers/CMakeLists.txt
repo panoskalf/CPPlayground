@@ -1,0 +1,1 @@
+add_executable(pointers_demo main.cpp demo_object.h)
