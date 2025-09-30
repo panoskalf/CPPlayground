@@ -7,23 +7,23 @@
 #include <utility>
 #include <cstdint>
 
-class demo_object;
+class DummyRaw;
 
 class logger {
 public:
-    logger(const char* func_name, const demo_object& obj);
+    logger(const char* func_name, const DummyRaw& obj);
     ~logger();
     std::string function_name; // track function name (__func__) or custom description (string literal)
-    const demo_object& logged_object; // track obj on entry and exit
+    const DummyRaw& logged_object; // track obj on entry and exit
     static int num; // numbering of logs for readability
 };
 
-class demo_object {
-    friend std::ostream& operator<<(std::ostream& os, const demo_object& obj);
+class DummyRaw {
+    friend std::ostream& operator<<(std::ostream& os, const DummyRaw& obj);
 public:
     friend class logger;
 
-    demo_object(const char* name, int value) : name{nullptr}, value{nullptr} {
+    DummyRaw(const char* name, int value) : name{nullptr}, value{nullptr} {
         logger log("ctor", *this); // LOG
 
         if (name) {
@@ -37,7 +37,7 @@ public:
         *(this->value) = value;
     }
 
-    ~demo_object() {
+    ~DummyRaw() {
         logger log("dtor", *this); // LOG
         if(name) {
             delete[] name;
@@ -50,7 +50,7 @@ public:
     }
 
     // copy ctor - rule of 3
-    demo_object(const demo_object& other) : name{nullptr}, value{nullptr} {
+    DummyRaw(const DummyRaw& other) : name{nullptr}, value{nullptr} {
         logger log("copy ctor", *this); // LOG
         if(other.name) {
             this->name = new char[strlen(other.name) + 1];
@@ -65,7 +65,7 @@ public:
     }
 
     // copy assignment - rule of 3
-    demo_object& operator=(const demo_object& rhs) {
+    DummyRaw& operator=(const DummyRaw& rhs) {
         logger log("copy assignment", *this); // LOG
         if (this == &rhs) {
             return *this;
@@ -85,13 +85,13 @@ public:
             *name = '\0';
         }
 
-        // TODO: check for num rhs.value or this->value?
+        // should be already allocated
         *value = *(rhs.value);
         return *this;
     }
 
     // move constructor - rule of 5
-    demo_object(demo_object&& other)
+    DummyRaw(DummyRaw&& other)
     : name{other.name}, value{other.value} {
         logger log("move ctor", *this); // LOG
         other.name = nullptr;
@@ -99,7 +99,7 @@ public:
     }
 
     // move assignment - rule of 5
-    demo_object& operator=(demo_object&& rhs) {
+    DummyRaw& operator=(DummyRaw&& rhs) {
         logger log("move assignment", *this);
         if (&rhs == this) {
             return *this;
@@ -117,13 +117,19 @@ public:
         return *this;
     }
 
+    char* getName(void) { return name; };
+    int* getValue(void) { return value; };
+
+    static constexpr bool is_copy_deep = true;
+    static constexpr bool supports_copy = true;
+
 private:
     char* name;
     int* value;
 };
 
 
-std::ostream& operator<<(std::ostream& os, const demo_object& obj) {
+std::ostream& operator<<(std::ostream& os, const DummyRaw& obj) {
     // check if name ptr is null (moved object)
     if(obj.name)
     {
@@ -143,7 +149,7 @@ std::ostream& operator<<(std::ostream& os, const demo_object& obj) {
 
 int logger::num = 0;
 
-inline logger::logger(const char* func_name, const demo_object& obj)
+inline logger::logger(const char* func_name, const DummyRaw& obj)
 : function_name{func_name}, logged_object{obj} {
     ++num;
     std::cout << num << ". Entering " << function_name << " at [0x" << std::hex << reinterpret_cast<uintptr_t>(&logged_object) << std::dec << "] with " << logged_object << " " << std::endl;
