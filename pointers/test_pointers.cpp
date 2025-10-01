@@ -1,11 +1,12 @@
 #include "gtest/gtest.h"
 #include "DummyRaw.h"
 #include "DummyShared.h"
+#include "DummyUnique.h"
 
 template <typename T>
 class TypedTest : public ::testing::Test {};
 
-using DummyObjectTypes = ::testing::Types<DummyRaw, DummyShared>;
+using DummyObjectTypes = ::testing::Types<DummyRaw, DummyShared, DummyUnique>;
 
 TYPED_TEST_SUITE(TypedTest, DummyObjectTypes);
 
@@ -23,60 +24,81 @@ TYPED_TEST(TypedTest, Constructor)
 // Test copy constructor performs deep copy (Rule of 3/5)
 TYPED_TEST(TypedTest, CopyConstructor)
 {
-    const char* n = "test";
-    TypeParam a(n, 10);
-    TypeParam b(a);  // Copy constructor called
+    // for DummyUnique copy is not supported
+    if constexpr (TypeParam::supports_copy) {
 
-    EXPECT_STREQ(a.getName(), b.getName());     // Content identical
-    EXPECT_NE(a.getName(), b.getName());        // But pointers differ (deep copy)
-    EXPECT_NE(b.getName(), n);                  // Neither points to original literal
-    EXPECT_EQ(*(a.getValue()), *(b.getValue())); // Values identical
-    if constexpr (a.is_copy_deep) {
-        // Value pointers differ (by design)
-        EXPECT_NE(a.getValue(), b.getValue());
-    } else {
-        // shared pointer checks
-        EXPECT_EQ(a.getSharedPtr().use_count(), 2);
+        const char* n = "test";
+        TypeParam a(n, 10);
+        TypeParam b(a);  // Copy constructor called
+
+        EXPECT_STREQ(a.getName(), b.getName());     // Content identical
+        EXPECT_NE(a.getName(), b.getName());        // But pointers differ (deep copy)
+        EXPECT_NE(b.getName(), n);                  // Neither points to original literal
+        EXPECT_EQ(*(a.getValue()), *(b.getValue())); // Values identical
+        if constexpr (a.is_copy_deep) {
+            // Value pointers differ (by design)
+            EXPECT_NE(a.getValue(), b.getValue());
+        } else {
+            // shared pointer checks
+            EXPECT_EQ(a.getSharedPtr().use_count(), 2);
+        }
+    } else if constexpr (!TypeParam::supports_copy) {
+        GTEST_SKIP() << "Skipping test for non-copyable type: "
+                     << typeid(TypeParam).name() << std::endl;
     }
 }
 
 // Test copy assignment operator performs deep copy (Rule of 3/5)
 TYPED_TEST(TypedTest, CopyAssignment)
 {
-    TypeParam a("first", 10);
-    TypeParam b("second", 20);
+    // for DummyUnique copy is not supported
+    if constexpr (TypeParam::supports_copy) {
 
-    a = b;  // Copy assignment operator called
+        TypeParam a("first", 10);
+        TypeParam b("second", 20);
 
-    EXPECT_STREQ(a.getName(), b.getName());     // Content copied
-    EXPECT_NE(a.getName(), b.getName());        // Pointers still different
-    EXPECT_EQ(*(a.getValue()), *(b.getValue())); // Values copied
-    if constexpr (a.is_copy_deep) {
-        // Value pointers differ (by design)
-        EXPECT_NE(a.getValue(), b.getValue());
-    } else {
-        // shared pointer checks
-        EXPECT_EQ(a.getSharedPtr().use_count(), 2);
+        a = b;  // Copy assignment operator called
+
+        EXPECT_STREQ(a.getName(), b.getName());     // Content copied
+        EXPECT_NE(a.getName(), b.getName());        // Pointers still different
+        EXPECT_EQ(*(a.getValue()), *(b.getValue())); // Values copied
+        if constexpr (a.is_copy_deep) {
+            // Value pointers differ (by design)
+            EXPECT_NE(a.getValue(), b.getValue());
+        } else {
+            // shared pointer checks
+            EXPECT_EQ(a.getSharedPtr().use_count(), 2);
+        }
+    } else if constexpr (!TypeParam::supports_copy) {
+        GTEST_SKIP() << "Skipping test for non-copyable type: "
+                     << typeid(TypeParam).name() << std::endl;
     }
 }
 
 // Test self-assignment safety - should be no-op without crashes
 TYPED_TEST(TypedTest, CopyAssignmentSelf)
 {
-    TypeParam a("original", 42);
+    // for DummyUnique copy is not supported
+    if constexpr (TypeParam::supports_copy) {
 
-    // Store original state to verify preservation
-    const char* original_name = a.getName();
-    const int* original_value_ptr = a.getValue();
-    const int original_value = *(a.getValue());
+        TypeParam a("original", 42);
 
-    a = a;  // Self-assignment - should detect and return early
+        // Store original state to verify preservation
+        const char* original_name = a.getName();
+        const int* original_value_ptr = a.getValue();
+        const int original_value = *(a.getValue());
 
-    // Object state should be completely unchanged
-    EXPECT_STREQ(a.getName(), "original");      // Content preserved
-    EXPECT_EQ(*(a.getValue()), original_value); // Value preserved
-    EXPECT_EQ(a.getName(), original_name);      // No reallocation occurred
-    EXPECT_EQ(a.getValue(), original_value_ptr); // No reallocation occurred
+        a = a;  // Self-assignment - should detect and return early
+
+        // Object state should be completely unchanged
+        EXPECT_STREQ(a.getName(), "original");      // Content preserved
+        EXPECT_EQ(*(a.getValue()), original_value); // Value preserved
+        EXPECT_EQ(a.getName(), original_name);      // No reallocation occurred
+        EXPECT_EQ(a.getValue(), original_value_ptr); // No reallocation occurred
+    } else if constexpr (!TypeParam::supports_copy) {
+        GTEST_SKIP() << "Skipping test for non-copyable type: "
+                     << typeid(TypeParam).name() << std::endl;
+    }
 }
 
 // Test move constructor transfers ownership (Rule of 5)
