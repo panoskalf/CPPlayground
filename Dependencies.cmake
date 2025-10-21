@@ -1,26 +1,20 @@
 include(FetchContent)
 
-# GoogleTest
+# GoogleTest - Modern FetchContent approach
 find_package(GTest 1.12.1 QUIET)
 if (NOT GTest_FOUND)
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
     FetchContent_Declare(
         googletest
         DOWNLOAD_EXTRACT_TIMESTAMP OFF
-        URL https://github.com/google/googletest/archive/release-1.12.1.zip
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG release-1.12.1
     )
 
-    FetchContent_GetProperties(googletest)
-    if (NOT googletest_POPULATED)
-        # Show download progress when actually downloading
-        set(FETCHCONTENT_QUIET NO)
-
-        # For Windows: Prevent overriding the parent project's compiler/linker settings
-        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-        # Download, extract, and add to build system
-        FetchContent_Populate(googletest)
-        add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
-    endif()
+    # This does everything: download, extract, and add_subdirectory
+    FetchContent_MakeAvailable(googletest)
 endif()
 
 # Organize in IDE (Visual Studio/CLion)

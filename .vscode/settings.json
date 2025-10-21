@@ -82,6 +82,7 @@
         "xstddef": "cpp",
         "xtr1common": "cpp",
         "ranges": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "types.h": "c"
     }
 }

@@ -1,20 +1,21 @@
 # Platform-specific source selection
 if(WIN32)
-    set(SOCKET_IMPL try_sockets_windows.cpp)
-    # Link Winsock library on Windows
-    set(SOCKET_LIBS ws2_32 wsock32)
+set(SIMPLESOCKET_SOURCE SimpleSocket_windows.cpp)
+set(SOCKET_LIBS ws2_32)
+message(STATUS "Building Panos' SimpleSocket lib for Windows")
 else()
-    set(SOCKET_IMPL try_sockets_linux.cpp)
-    set(SOCKET_LIBS)
+set(SIMPLESOCKET_SOURCE SimpleSocket_linux.cpp)
+set(SOCKET_LIBS)
+message(STATUS "Building Panos' SimpleSocket for Linux/POSIX")
 endif()
 
-add_executable(try_sockets
-    main.cpp
-    ${SOCKET_IMPL}
+# RAII Utilities Library
+add_library(SimpleSocket STATIC
+    ${SIMPLESOCKET_SOURCE}
 )
 
-# Link platform-specific libraries
-target_link_libraries(try_sockets ${SOCKET_LIBS})
+# So others can #include "SimpleSocket.h"
+target_include_directories(SimpleSocket PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-# Print which implementation is being used
-message(STATUS "Using socket implementation: ${SOCKET_IMPL}")
+# Link platform-specific libraries
+target_link_libraries(SimpleSocket ${SOCKET_LIBS})
