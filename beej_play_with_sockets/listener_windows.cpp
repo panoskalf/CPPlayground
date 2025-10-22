@@ -33,9 +33,7 @@ int main(void)
 			}
 
 			char s[INET6_ADDRSTRLEN];
-			std::cout << "listener: got packet from" << inet_ntop(their_addr.ss_family,
-					get_in_addr((struct sockaddr *)&their_addr),
-					s, sizeof s) << std::endl;
+			std::cout << "listener: got packet from" << su::SimpleAddrinfo::getIP(their_addr) << std::endl;
 
 			std::cout << "listener: packet is " << numbytes << " bytes long\n";
 			buf[numbytes] = '\0';

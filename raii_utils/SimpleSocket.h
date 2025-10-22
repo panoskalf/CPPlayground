@@ -18,20 +18,6 @@ struct sockaddr_storage; // comes from Windows winsock2.h - Linux sys/socket.h
 
 // Socket Utilities namespace abreviated
 namespace su {
-    // Platform-specific initilizatinon singleton (Windows WSA, Linux no-op)
-    class PlatformInit {
-    public:
-        static PlatformInit& instance() {
-            static PlatformInit instance; // Thread-safe in >= C++11
-            return instance;
-        }
-    private:
-        PlatformInit(); // Platform-specific initialization
-        ~PlatformInit() noexcept; // Platform-specific cleanup
-        PlatformInit(const PlatformInit&) = delete; // not copyable, not movable
-        PlatformInit& operator=(const PlatformInit&) = delete; // not copyable, not movable
-    };
-
     class SimpleSocket {
     public:
 

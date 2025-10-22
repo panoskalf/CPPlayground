@@ -5,23 +5,31 @@
 #include <iostream>
 #include "SimpleSocket.h"
 
-
-// Platform-specific initialization
-su::PlatformInit::PlatformInit() {
-    WSADATA wsaData;
-    if (WSAStartup(MAKEWORD(2,2), &wsaData) != 0) {
-        throw std::runtime_error("WSAStartup failed: " + std::to_string(WSAGetLastError()));
+// Platform-specific initialization singleton for WSA
+class PlatformInit {
+public:
+    static PlatformInit& instance() {
+        static PlatformInit instance; // Thread-safe in >= C++11
+        return instance;
     }
-}
-
-// Platform-specific de-init
-su::PlatformInit::~PlatformInit() noexcept {
-    int result = WSACleanup();
-    if (result == SOCKET_ERROR) { // TODO: duplicate?
-        // Can't throw from destructor - just ignore or log
-        [[maybe_unused]] int error = WSAGetLastError();
+private:
+    PlatformInit() {
+        WSADATA wsaData;
+        if (WSAStartup(MAKEWORD(2,2), &wsaData) != 0) {
+            throw std::runtime_error("WSAStartup failed: " + std::to_string(WSAGetLastError()));
+        }
     }
-}
+    ~PlatformInit() noexcept {
+        int result = WSACleanup();
+        if (result == SOCKET_ERROR) { // TODO: duplicate?
+            // Can't throw from destructor - just ignore or log
+            [[maybe_unused]] int error = WSAGetLastError();
+        }
+    }
+    PlatformInit(const PlatformInit&) = delete; // not copyable, not movable
+    PlatformInit& operator=(const PlatformInit&) = delete; // not copyable, not movable
+};
+
 
 // Platform-specific implementation for socket
 class su::SimpleSocket::Impl {
