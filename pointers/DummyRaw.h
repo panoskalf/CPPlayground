@@ -93,7 +93,7 @@ public:
     // move constructor - rule of 5
     DummyRaw(DummyRaw&& other)
     : name{other.name}, value{other.value} {
-        logger log("move ctor", *this); // LOG
+        // logger log("move ctor", *this); // LOG
         other.name = nullptr;
         other.value = nullptr;
     }
@@ -152,9 +152,13 @@ int logger::num = 0;
 inline logger::logger(const char* func_name, const DummyRaw& obj)
 : function_name{func_name}, logged_object{obj} {
     ++num;
+#ifndef DUMMY_DISABLE_LOGGING
     std::cout << num << ". Entering " << function_name << " at [0x" << std::hex << reinterpret_cast<uintptr_t>(&logged_object) << std::dec << "] with " << logged_object << " " << std::endl;
+#endif
 }
 
 inline logger::~logger() {
+#ifndef DUMMY_DISABLE_LOGGING
     std::cout << num << ". Exiting " << function_name << " at [0x" << std::hex << reinterpret_cast<uintptr_t>(&logged_object) << std::dec << "] with " << logged_object << " " << std::endl;
+#endif
 }

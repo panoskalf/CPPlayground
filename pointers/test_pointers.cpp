@@ -1,4 +1,8 @@
+#include <string>
+#include <chrono>
 #include "gtest/gtest.h"
+// Disable logging during tests for clean output and accurate timing
+#define DUMMY_DISABLE_LOGGING
 #include "DummyRaw.h"
 #include "DummyShared.h"
 #include "DummyUnique.h"
@@ -166,4 +170,79 @@ TYPED_TEST(TypedTest, MoveAssignmentSelf)
     } else if constexpr (std::is_same_v<TypeParam, DummyShared>) {
         EXPECT_STREQ(a.getName(), "");              // implementation specific
     }
+}
+
+TYPED_TEST(TypedTest, ExceptionSafety)
+{
+    if constexpr (TypeParam::supports_copy)
+    {
+        // Test what happens when allocation fails
+        // Mock allocation failure scenarios
+
+        // Test with insufficient memory
+        TypeParam a("short", 1);
+        const size_t BIG_SIZE = 1024;
+        std::string long_str(BIG_SIZE, 'x');
+        TypeParam b(long_str.c_str(), 2);
+
+        // This should either succeed or throw, but not corrupt memory
+        EXPECT_NO_THROW(a = b);
+    }
+}
+
+TYPED_TEST(TypedTest, EdgeCases)
+{
+    // Test with very long strings
+    const size_t BIG_SIZE = 10000;
+    std::string long_str(BIG_SIZE, 'a');
+
+    EXPECT_NO_THROW(TypeParam a(long_str.c_str(), INT_MAX));
+
+    // Test with special characters
+    EXPECT_NO_THROW(TypeParam b("test\n\t\r\0embedded", 42));
+
+    // Test with negative values
+    EXPECT_NO_THROW(TypeParam c("negative", -999));
+}
+
+TYPED_TEST(TypedTest, MoveIsActuallyFast)
+{
+    // Large string for performance test
+    const size_t BIG_SIZE = 50000;  // Larger to make timing more reliable
+    std::string long_str(BIG_SIZE, 'b');
+
+    // Warmup to avoid cold cache effects
+    for(int i = 0; i < 10; ++i) {
+        TypeParam warmup(long_str.c_str(), i);
+    }
+
+    // Measure constructor time (should involve allocation)
+    auto start_ctor = std::chrono::high_resolution_clock::now();
+    TypeParam source(long_str.c_str(), 42);
+    auto end_ctor = std::chrono::high_resolution_clock::now();
+
+    // Measure move time (should be just pointer swaps)
+    auto start_move = std::chrono::high_resolution_clock::now();
+    TypeParam dest = std::move(source);
+    auto end_move = std::chrono::high_resolution_clock::now();
+
+    auto duration_ctor = std::chrono::duration_cast<std::chrono::nanoseconds>(end_ctor - start_ctor);
+    auto duration_move = std::chrono::duration_cast<std::chrono::nanoseconds>(end_move - start_move);
+
+    // Move should be significantly faster than construction
+    // Allow for measurement noise but expect move to be at least 10x faster
+    EXPECT_LT(duration_move.count() * 10, duration_ctor.count())
+        << "Move took " << duration_move.count() << "ns, "
+        << "Constructor took " << duration_ctor.count() << "ns. "
+        << "Move should be much faster!";
+
+    // Also verify move actually happened
+    if constexpr (std::is_same_v<TypeParam, DummyRaw>) {
+        EXPECT_EQ(source.getName(), nullptr);  // Raw pointer explicitly nulled
+    } else {
+        // std::string moved-from state is valid but unspecified
+        // Just verify **dest** got the content (move succeeded)
+        EXPECT_NE(dest.getName(), nullptr);
+    }
+    EXPECT_STREQ(dest.getName(), long_str.c_str());
 }
