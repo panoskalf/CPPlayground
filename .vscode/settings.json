@@ -115,10 +115,8 @@
     "C_Cpp.default.intelliSenseMode": "gcc-x64",
     "C_Cpp.debugShortcut": false,
     "editor.insertSpaces": true,
-    "editor.tabSize": 4,
     "editor.detectIndentation": false,
     "editor.formatOnSave": true,
-    "editor.formatOnType": true,
     "[cpp]": {
         "editor.tabSize": 4,
         "editor.insertSpaces": true,
@@ -133,5 +131,8 @@
         "editor.tabSize": 4,
         "editor.insertSpaces": true,
         "editor.formatOnSave": true
+    },
+    "yaml.schemas": {
+        "https://www.schemastore.org/github-workflow.json": "file:///c%3A/projects/Learning/panos/playground/.github/workflows/cmake-multi-platform.yml"
     }
 }
