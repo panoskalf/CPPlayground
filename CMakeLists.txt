@@ -14,5 +14,4 @@ include(Dependencies.cmake)
 add_subdirectory(raii_utils) # library first
 add_subdirectory(beej_play_with_sockets) # examples that use library
 add_subdirectory(string_utilities)
-add_subdirectory(fixed_point)
 add_subdirectory(pointers)
