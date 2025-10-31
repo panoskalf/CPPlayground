@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 {
     try {
         if (argc != 2) {
-            throw std::invalid_argument("invalid argument, usage: showip hostname");
+            throw std::invalid_argument("invalid argument, usage: client hostname");
         }
 
         addrinfo addr_info{};
@@ -25,13 +25,15 @@ int main(int argc, char* argv[])
 
         if (client) {
             std::cout << "client: connected to " << su::SimpleAddrinfo::getIP(addr_info) << std::endl;
+        } else {
+            throw std::runtime_error("client failed to connect to " + std::string(argv[1]));
         }
 
         char buf[MAX_DATA_SIZE];
         int numbytes = -1;
         if ((numbytes = client->recv(buf, MAX_DATA_SIZE-1)) == -1) {
             std::cerr << "recv" << std::endl;
-	    } else {
+        } else {
             buf[numbytes] = '\0';
             std::cout << "client: received " << buf << std::endl;
         }

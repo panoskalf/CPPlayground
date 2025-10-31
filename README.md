@@ -30,32 +30,28 @@ I am sharing this fun little project of mine for educational purpose and hopeful
 - C++ (version 17 or higher)
 
 ### Build All Examples
-On Windows you can use the provided batch files for convenience:
+Use the provided cross-platform scripts:
 
-- **MSVC (default):**
-	Double-click or run `build.bat`
-- **MinGW:**
-	Double-click or run `build_mingw.bat`
-
-Or manually:
+```bash
+cmake -P build.cmake    # Build project (MinGW on Windows, Unix Makefiles on Linux)
+cmake -P clean.cmake    # Clean build files
+cmake -P test.cmake     # Run all tests
 ```
-cmake -S . -B build
-cmake --build build
+or let cmake detect your systems default generator:
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug		# Configure step
+cmake --build build		                        	# Build step
 ```
 
 ### Run an Example
-After building, executables are located `build/<example_folder>/<target_name>`. For example:
+After building, executables are in `build/<example_folder>/`:
 ```
 build/string_utilities/string_demo.exe
 ```
 
 ### Run Tests
-To run all tests (from the build directory):
-```
-cd build
-ctest
-```
-Or run a specific test executable directly:
-```
-build/<example_folder>/<test_target_name>.exe
+```bash
+cmake -P test.cmake     # All tests
+# Or run individual test executables:
+build/<example_folder>/<test_name>.exe
 ```
