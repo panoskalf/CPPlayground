@@ -1,18 +1,21 @@
 # Platform-specific source selection
 if(WIN32)
-set(SIMPLESOCKET_SOURCE SimpleSocket_windows.cpp)
-set(SOCKET_LIBS ws2_32)
-message(STATUS "Building Panos' SimpleSocket lib for Windows")
-else()
-set(SIMPLESOCKET_SOURCE SimpleSocket_linux.cpp)
-set(SOCKET_LIBS)
-message(STATUS "Building Panos' SimpleSocket for Linux/POSIX")
-endif()
+  set(SIMPLESOCKET_SOURCE SimpleSocket_windows.cpp)
+  set(SOCKET_LIBS ws2_32)
+  message(STATUS "Building Panos' SimpleSocket lib for Windows")
 
-# RAII Utilities Library
-add_library(SimpleSocket STATIC
-    ${SIMPLESOCKET_SOURCE}
-)
+  # RAII Utilities Library
+  add_library(SimpleSocket STATIC ${SIMPLESOCKET_SOURCE})
+else()
+  set(SOCKET_LIBS)
+  message(
+    STATUS
+      "SimpleSocket Linux implementation not yet available - creating header-only target"
+  )
+
+  # Create header-only library for Linux (no implementation yet)
+  add_library(SimpleSocket INTERFACE)
+endif()
 
 # So others can #include "SimpleSocket.h"
 target_include_directories(SimpleSocket PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
